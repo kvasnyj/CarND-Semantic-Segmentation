@@ -159,7 +159,7 @@ def run():
 
 
     epochs = 20
-    batch_size = 32
+    batch_size = 16
 
     with tf.Session() as sess:
         # Path to vgg model
