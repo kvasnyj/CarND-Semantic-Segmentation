@@ -54,26 +54,32 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     """
 
     layer7_fcn = tf.layers.conv2d(vgg_layer7_out, num_classes, (1, 1), (1, 1),
-                                  kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
+                                  kernel_initializer=tf.truncated_normal_initializer(stddev=0.01),
+                                  kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
 
     layer7_upscale = tf.layers.conv2d_transpose(layer7_fcn, num_classes, (4, 4), (2, 2), padding='SAME',
-                                                kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
+                                                kernel_initializer=tf.truncated_normal_initializer(stddev=0.01),
+                                                kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
 
     layer4_fcn = tf.layers.conv2d(vgg_layer4_out, num_classes, (1, 1), (1, 1),
-                                  kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
+                                  kernel_initializer=tf.truncated_normal_initializer(stddev=0.01),
+                                  kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
 
     layer4_skip = tf.add(layer7_upscale, layer4_fcn)
 
     layer4_upscale = tf.layers.conv2d_transpose(layer4_skip, num_classes, (4, 4), (2, 2), padding='SAME',
-                                                kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
+                                                kernel_initializer=tf.truncated_normal_initializer(stddev=0.01),
+                                                kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
 
     layer3_fcn = tf.layers.conv2d(vgg_layer3_out, num_classes, (1, 1), (1, 1),
-                                  kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
+                                  kernel_initializer=tf.truncated_normal_initializer(stddev=0.01),
+                                  kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
 
     layer3_skip = tf.add(layer4_upscale, layer3_fcn)
 
     output = tf.layers.conv2d_transpose(layer3_skip, num_classes, (16, 16), (8, 8), padding='SAME',
-                                        kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
+                                        kernel_initializer=tf.truncated_normal_initializer(stddev=0.01),
+                                        kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
 
     return output
 
@@ -127,7 +133,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
                 input_image: image,
                 correct_label: image_c,
                 keep_prob: 0.5,
-                learning_rate: 0.001
+                learning_rate: 0.0001
             })
 
             print("Loss: {} at Epoch {}/{}".format(loss, epoch, epochs))
